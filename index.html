@@ -443,7 +443,7 @@
 
     <div class="container">
         <div class="logo">RW</div>
-        <h1>WELCOME TO RICO WORLD<span class="dots">
+        <h1>WELCOME TO QASSIM WORLD<span class="dots">
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
@@ -528,19 +528,6 @@
     <iframe id="contentFrame" title="Protected Content" allowfullscreen></iframe>
 
     <script>
-        // Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyD31ArwVR9L9H8p_ewGXq5b0cDcva0cqF0",
-            authDomain: "visitor-logger-89c4b.firebaseapp.com",
-            projectId: "visitor-logger-89c4b",
-            storageBucket: "visitor-logger-89c4b.appspot.com",
-            messagingSenderId: "82770471301",
-            appId: "1:82770471301:web:8ae6147496f9075ca47cec"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
 
         // admin
         const ADMIN_PASSWORD = "rico011899009";
@@ -929,34 +916,6 @@
         }
 
         // تسجيل بيانات الزوار
-        async function logVisitor(ip) {
-            try {
-                const response = await fetch("https://ipapi.co/json/");
-                const visitorData = await response.json();
-
-                const log = {
-                    ip: ip,
-                    city: visitorData.city,
-                    region: visitorData.region,
-                    country: visitorData.country_name,
-                    org: visitorData.org,
-                    userAgent: navigator.userAgent,
-                    time: new Date().toLocaleString(),
-                    visits: firebase.firestore.FieldValue.increment(1)
-                };
-
-                await db.collection("visitors").doc(ip).set(log, { merge: true });
-
-                // عرض بيانات الزائر في منطقة السجلات
-                document.getElementById("logContent").textContent = JSON.stringify(log, null, 2);
-                document.getElementById("logArea").style.display = "block";
-
-            } catch (error) {
-                console.error("Error logging visitor:", error);
-                document.getElementById("logContent").textContent = "Error logging visitor data";
-                document.getElementById("logArea").style.display = "block";
-            }
-        }
 
         function checkPassword() {
             const password = document.getElementById("passwordInput").value.trim();
@@ -997,88 +956,8 @@
             }
         }
 
-        async function loadVisitors() {
-            if (!isAdminVerified) return;
+       
 
-            try {
-                const snapshot = await db.collection("visitors").orderBy("time", "desc").limit(50).get();
-                let html = '<table class="visitors-table"><tr><th>IP</th><th>Location</th><th>Organization</th><th>Time</th><th>Visits</th><th>Status</th><th>Actions</th></tr>';
-
-                const blockedSnapshot = await db.collection("blockedIPs").get();
-                const blockedIPs = blockedSnapshot.docs.map(doc => doc.id);
-
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const isBlocked = blockedIPs.includes(doc.id);
-                    const location = `${data.city || ''}${data.city && data.country ? ', ' : ''}${data.country || ''}`;
-
-                    html += `
-                        <tr>
-                            <td>${doc.id}</td>
-                            <td>${location}</td>
-                            <td>${data.org || 'N/A'}</td>
-                            <td>${data.time || new Date().toLocaleString()}</td>
-                            <td>${data.visits || 1}</td>
-                            <td>${isBlocked ? '❌ Blocked' : '✅ Active'}</td>
-                            <td>
-                                ${!isBlocked ? `<button class="action-btn block-btn" onclick="blockIP('${doc.id}')">Block</button>` : ''}
-                                ${isBlocked ? `<button class="action-btn unblock-btn" onclick="unblockIP('${doc.id}')">Unblock</button>` : ''}
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                html += '</table>';
-                document.getElementById("visitorsList").innerHTML = html;
-            } catch (error) {
-                console.error("Error loading visitors:", error);
-                showError("Failed to load visitors data");
-            }
-        }
-
-        async function checkIfBlocked(ip) {
-            try {
-                const doc = await db.collection("blockedIPs").doc(ip).get();
-                if (doc.exists) {
-                    window.location.href = "https://www.google.com";
-                } else {
-                    logVisitor(ip);
-                }
-            } catch (error) {
-                console.error("Error checking blocked IPs:", error);
-            }
-        }
-
-        async function blockIP(ip = null) {
-            const ipToBlock = ip || document.getElementById("ipToBlock").value.trim();
-            if (!ipToBlock) return;
-
-            try {
-                await db.collection("blockedIPs").doc(ipToBlock).set({ 
-                    blockedAt: new Date(),
-                    blockedBy: isAdminVerified ? "admin" : "system"
-                });
-                showSuccess(`IP ${ipToBlock} has been blocked`);
-                if (isAdminVerified) loadVisitors();
-            } catch (error) {
-                console.error("Error blocking IP:", error);
-                showError("Failed to block IP");
-            }
-        }
-
-        async function unblockIP(ip = null) {
-            const ipToUnblock = ip || document.getElementById("ipToUnblock").value.trim();
-            if (!ipToUnblock) return;
-
-            try {
-                await db.collection("blockedIPs").doc(ipToUnblock).delete();
-                showSuccess(`IP ${ipToUnblock} has been unblocked`);
-                if (isAdminVerified) loadVisitors();
-            } catch (error) {
-                console.error("Error unblocking IP:", error);
-                showError("Failed to unblock IP");
-            }
-        }
 
         function showError(message) {
             const errorMsg = document.getElementById("errorMsg");
