@@ -407,20 +407,21 @@
         }
 
         /* زر الرجوع */
-   .back-btn {
+.back-btn {
     position: fixed;
     top: 0;
     left: 0;
     z-index: 101;
     width: 30px;
     height: 30px;
-    display: none;
+    display: flex; /* <-- for testing */
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s;
-    transform: translate(7px, 7px); /* Move a bit away from the very edge */
+    transform: translate(60px, -10px); /* 60px right, 10px UP */
 }
+
 
 
         .back-btn svg { /* Style the SVG */
