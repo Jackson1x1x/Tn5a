@@ -407,23 +407,21 @@
         }
 
         /* زر الرجوع */
-        .back-btn {
-            position: fixed;
-            top: 7px; /* Moved higher */
-            left: 80px;
-            background: none; /* Removed background */
-            color: var(--text-color); /* Icon color */
-            border: none; /* Removed border */
-            width: 30px; /* Made smaller */
-            height: 30px; /* Made smaller */
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 101;
-            transition: all 0.3s;
-            /* font-size removed, using SVG size */
-        }
+   .back-btn {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 101;
+    width: 30px;
+    height: 30px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    transform: translate(7px, 7px); /* Move a bit away from the very edge */
+}
+
 
         .back-btn svg { /* Style the SVG */
             width: 20px; /* Adjust SVG size as needed */
