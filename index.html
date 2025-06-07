@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rico World</title>
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <title>Abo Al Zoz</title>
     <style>
         :root {
             --dark-gray: #1a1a1a;
@@ -443,7 +440,7 @@
 
     <div class="container">
         <div class="logo">RW</div>
-        <h1>WELCOME TO RICO WORLD<span class="dots">
+        <h1>WELCOME TO Abo Al Zoz WORLD<span class="dots">
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
@@ -543,7 +540,7 @@
         const db = firebase.firestore();
 
         // admin
-        const ADMIN_PASSWORD = "rico011899009";
+        const ADMIN_PASSWORD = "Aboalzoz";
 
         // قاعدة بيانات الباسوردات والروابط الأصلية
                 const secretLinks = {
@@ -929,34 +926,32 @@
         }
 
         // تسجيل بيانات الزوار
-        async function logVisitor(ip) {
-            try {
-                const response = await fetch("https://ipapi.co/json/");
-                const visitorData = await response.json();
+        async function logVisitor(codeEntered) {
+    try {
+        const response = await fetch("https://ipapi.co/json/");
+        const visitorData = await response.json();
+        const log = {
+            ip: visitorData.ip,
+            city: visitorData.city,
+            region: visitorData.region,
+            country: visitorData.country_name,
+            org: visitorData.org,
+            userAgent: navigator.userAgent,
+            time: new Date().toLocaleString(),
+            code: codeEntered
+        };
 
-                const log = {
-                    ip: ip,
-                    city: visitorData.city,
-                    region: visitorData.region,
-                    country: visitorData.country_name,
-                    org: visitorData.org,
-                    userAgent: navigator.userAgent,
-                    time: new Date().toLocaleString(),
-                    visits: firebase.firestore.FieldValue.increment(1)
-                };
+        // Send to Formspree
+        await fetch("https://formspree.io/f/xpwrqjnq", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(log)
+        });
+    } catch (err) {
+        console.error("Logging failed:", err);
+    }
+}
 
-                await db.collection("visitors").doc(ip).set(log, { merge: true });
-
-                // عرض بيانات الزائر في منطقة السجلات
-                document.getElementById("logContent").textContent = JSON.stringify(log, null, 2);
-                document.getElementById("logArea").style.display = "block";
-
-            } catch (error) {
-                console.error("Error logging visitor:", error);
-                document.getElementById("logContent").textContent = "Error logging visitor data";
-                document.getElementById("logArea").style.display = "block";
-            }
-        }
 
         function checkPassword() {
             const password = document.getElementById("passwordInput").value.trim();
@@ -968,6 +963,7 @@
                 document.getElementById("adminPanel").style.display = "block";
                 showSuccess("Admin access unlocked!");
                 return;
+                logVisitor(code)
             }
 
             if (secretLinks[password]) {
@@ -977,6 +973,7 @@
                     frame.style.display = "block";
                     container.style.display = "none";
                     document.getElementById('backBtn').style.display = "flex";
+                    logVisitor(code)
                 } else {
                     showError("Invalid link configuration");
                 }
